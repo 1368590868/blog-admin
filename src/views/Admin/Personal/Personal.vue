@@ -1,158 +1,89 @@
 <template>
-    <div class="personal">
-        <div style="border-bottom: 1px solid #cccccc;font-size: 18px;">个人信息</div>
-        <div class="userinfo">
-            <a-row class="user-head" type="flex" justify="center" :gutter="20">
-                <a-col :span="6">
-                    <a-upload-dragger
-                            name="avatar"
-                            listType="picture-card"
-                            class="avatar-uploader"
-                            :showUploadList="false"
-                            action="https://sm.ms/api/upload"
-                            :beforeUpload="beforeUpload"
-                            @change="handleChange"
-                            accept="image/*"
-                    >
-                        <div v-if="user.headUrl != null" class="user-box">
-                            <img :src="user.headUrl" alt="avatar"/>
-                            <a-button style="margin-top: 5px">上传文件</a-button>
-                        </div>
-                        <div v-else>
-                            <a-icon :type="loading ? 'loading' : 'plus'"/>
-                            <div class="ant-upload-text">Upload</div>
-                        </div>
-                    </a-upload-dragger>
-                </a-col>
-            </a-row>
-            <a-row class="user-name" align="middle" type="flex" justify="center" :gutter="20" style="margin-top: 8.8vh">
-                <a-col :span="2" style="text-align: right">用户名:</a-col>
-                <a-col :span="6">
-                    <a-input placeholder="Basic usage" v-model="user.name" ref="userNameInput">
-                        <a-icon slot="prefix" type="user"/>
-                    </a-input>
-                </a-col>
-            </a-row>
-            <div style="display: flex;justify-content: center;margin-top: 3vh">
-                <a-button type="primary" @click="updateUser">确定修改</a-button>
-            </div>
-        </div>
-    </div>
+  <div class="clearfix">
+    <a-upload
+      action="http://irlin.cn:3001/api/upload"
+      listType="picture-card"
+      :fileList="fileList"
+      @preview="handlePreview"
+      @change="handleChange"
+    >
+      <a-icon type="plus" />
+      <div class="ant-upload-text">Upload</div>
+    </a-upload>
+    <a-modal :visible="previewVisible" :footer="null" @cancel="handleCancel">
+      <img alt="example" style="width: 100%" :src="previewImage" />
+    </a-modal>
+
+    <ul>
+      <li
+        v-for="(item,i) of img"
+        :key="i"
+        :style="{listStyle: 'none',width:'150px',height:'150px',margin:'10px 20px'}"
+      >
+        <img :src="item.url" width="100%" @click="preview(item.url)" />
+      </li>
+    </ul>
+  </div>
 </template>
-
 <script>
-import { getIssue, updateIssue } from '@/api/article'
-import { imgUpload, imgDelete } from '@/api/user'
-import config from '@/config/defaultSettings'
-
 export default {
-  name: 'Personal',
   data () {
     return {
-      user: {},
-      loading: false,
-      issue: {}
-    }
-  },
-  methods: {
-    /**
-     * 修改用户信息
-     */
-    updateUser () {
-      updateIssue({
-        articleId: this.issue.number,
-        body: JSON.stringify(this.user),
-        labels: [config.userInfoLabel]
-      }).then(updateRes => {
-        this.$message.success('用户信息修改成功')
-        this.$store.commit('setName', this.user.name)
-      })
-    },
-    /**
-     * 头像上传
-     * @param info
-     */
-    handleChange (info) {
-      let formData = new FormData()
-      formData.append('smfile', info.file)
-      this.$setLoading(true)
-      imgUpload(formData)
-        .then(imgRes => {
-          this.$setLoading(false)
-          imgRes.json().then((imgJson) => {
-            if (imgJson.success) {
-              this.user.headUrl = imgJson.data.url
-              // 如果存在上一个头像删除上一个头像
-              if (this.user.hash != null) {
-                imgDelete(this.user.hash)
-              }
-              this.user.hash = imgJson.data.hash
-              updateIssue({
-                articleId: this.issue.number,
-                body: JSON.stringify(this.user),
-                labels: [config.userInfoLabel]
-              }).then(updateRes => {
-                this.$message.success('头像上传成功')
-                this.$store.commit('setHead', this.user.headUrl)
-              })
-            } else {
-              this.$message.error('头像上传失败,message: ' + imgJson.message)
-            }
-          })
-        })
-    },
-    acceptUpload (file) {
-      const isJPG = file.type === 'image/jpeg'
-      if (!isJPG) {
-        this.$message.error('You can only upload JPG file!')
-      }
-      const isLt2M = file.size / 1024 / 1024 < 2
-      if (!isLt2M) {
-        this.$message.error('Image must smaller than 2MB!')
-      }
-      return isJPG && isLt2M
-    },
-    beforeUpload () {
-      return false
-    }
+      previewVisible: false,
+      previewImage: '',
+      img: '',
+      fileList: [],
+    };
   },
   created () {
-    getIssue({
-      state: 'open',
-      labels: config.userInfoLabel
-    }).then(userRes => {
-      this.user = JSON.parse(userRes[0].body)
-      this.issue = userRes[0]
-    })
-  }
-}
-</script>
+    this.getPhoto()
+  },
+  methods: {
+    handleCancel () {
+      this.previewVisible = false;
+    },
+    handlePreview (file) {
+      this.previewImage = file.url || file.thumbUrl;
+      this.previewVisible = true;
+    },
+    handleChange (info) {
+      this.fileList = info.fileList;
+      if (info.file.status === 'done') {
+        this.$axios.post('https://irlin.cn/api/addImg', {
+          //info.fileList.length   每次上传图片，会存为一个数组，图片的值应该取对应数组的下标
+          url: `http://cdn.irlin.cn/${info.fileList[info.fileList.length - 1].response.data.key}`
+        }).then(res => {
+          this.img = [...this.img, { url: `http://cdn.irlin.cn/${info.fileList[info.fileList.length - 1].response.data.key}` }]
+        })
+      }
 
-<style lang="scss">
-    $headWH: 200px;
-    .personal {
-        padding-top: 3vh;
-        padding-left: 2vw;
-        text-align: left;
-
-        .user-head > div {
-            width: $headWH;
-            height: $headWH;
-            padding: 0 !important;
-            /*overflow: hidden;*/
-            .ant-upload.ant-upload-drag {
-                border-radius: $headWH/2;
-            }
-
-            .ant-upload.ant-upload-drag .ant-upload {
-                padding: 0 !important;
-
-                img {
-                    border-radius: $headWH/2;
-                    width: $headWH;
-                    height: $headWH;
-                }
-            }
-        }
+    },
+    getPhoto () {
+      this.$axios.get('https://irlin.cn/api/img').then(res => {
+        this.img = res.data.data
+      })
+    },
+    // 查看图片
+    preview (url) {
+      this.previewImage = url
+      this.previewVisible = true
     }
+  },
+};
+</script>
+<style scoped>
+/* you can make up upload button and sample style by using stylesheets */
+.ant-upload-select-picture-card i {
+  font-size: 32px;
+  color: #999;
+}
+
+.ant-upload-select-picture-card .ant-upload-text {
+  margin-top: 8px;
+  color: #666;
+}
+ul {
+  display: flex;
+  flex-flow: row wrap;
+}
 </style>

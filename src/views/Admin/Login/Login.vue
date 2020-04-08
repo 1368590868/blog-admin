@@ -64,7 +64,7 @@ export default {
         }
         // 本地存储保存token
         Cookie.set('token', token)
-        this.$router.push('/admin/home')
+        this.$router.push('/home')
         this.loading = false
       }).catch((error) => {
         console.log(error);
@@ -78,7 +78,7 @@ export default {
       const code = this.$route.query.code
       if (code == null || code === '') {
       }else{
-      this.getToken(code)
+      this.getToken(code) 
       }
   }
 }

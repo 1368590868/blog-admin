@@ -14,7 +14,10 @@ import {
   Select,
   Upload,
   Row,
-  Col
+  Col,
+  Table,
+  Modal,
+  Popconfirm
 } from 'ant-design-vue'
 
 Vue.use(Button)
@@ -31,4 +34,7 @@ Vue.use(Select)
 Vue.use(Upload)
 Vue.use(Row)
 Vue.use(Col)
+Vue.use(Table)
+Vue.use(Modal)
+Vue.use(Popconfirm)
 Vue.prototype.$message = message

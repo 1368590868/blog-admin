@@ -27,7 +27,7 @@ export default {
       icon: 'pie-chart',
       children: [
         {
-          title: '工作台',
+          title: '留言版',
           key: 'workbench',
           icon: 'reconciliation'
         },
@@ -65,6 +65,42 @@ export default {
     {
       value: 'jishu',
       label: '技术文章'
+    }
+  ],
+  //留言表表头字段配置
+  tableColumns: [
+{    title: '姓名',
+     dataIndex: 'username',
+      width: '12%',
+     key:'username'
+    },
+    {
+       title: '邮箱',
+         dataIndex: 'email',
+      align: 'center',
+         key:'email'
+    },
+    
+    {
+       title: '留言内容',
+         dataIndex: 'comment',
+         align:'center',
+      width: '40%',
+         key:'comment'
+    },
+    {
+       title: '时间',
+         dataIndex: 'createAt',
+      align: 'center',
+         key:'createAt'
+    },
+    {
+      title: '操作',
+      align:'center',
+      key: 'action',
+      scopedSlots: {
+        customRender: 'action',
+      }
     }
   ]
 

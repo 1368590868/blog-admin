@@ -94,7 +94,7 @@ export default {
   },
   created () {
     if (Cookie.get('token') == null || Cookie.get('token') === '') {
-      this.$router.push('/admin')
+      this.$router.push('/')
     }
     this.defaultSelected = [this.$route.name]
 

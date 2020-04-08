@@ -3,7 +3,7 @@
     <div class="left">
       <div style="border-bottom: 1px solid #cccccc;font-size: 18px;">修改文章</div>
       <div style="margin-top: 3vh">
-        <span>选择文章:</span>
+        <span>选择文章：</span>
         <a-select :autoFocus='true'  placeholder='请选择文章' style="width: 150px;margin:10px auto;" @change="contentType">
           <a-select-option
             v-for="(option,index) of articleName"
