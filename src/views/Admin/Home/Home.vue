@@ -79,7 +79,7 @@ export default {
       collapsed: false,
       menus: config.adminMenu,
       defaultSelected: ['personal'],
-      userInfo : ' '
+      userInfo: ' '
     }
   },
   methods: {
@@ -99,25 +99,24 @@ export default {
     this.defaultSelected = [this.$route.name]
 
     // 用户信息查询
-  this.$axios ({
-    method: 'get',
-    url: 'https://api.github.com/user',
-    headers: {
-      accept: 'application/json',
-      Authorization: `token ${Cookie.get('token')}`
-          }
-        }).then((res) => {
-        this.userInfo = res.data
-        
-        this.loading = false
-        this.$message.success(`${this.userInfo.name}，登陆成功`)
-      }).catch((error) => {
-        console.log(error);
-        this.loading = false
-      })
-  },
+    this.$axios({
+      method: 'get',
+      url: 'https://api.github.com/user',
+      headers: {
+        accept: 'application/json',
+        Authorization: `token ${Cookie.get('token')}`
+      }
+    }).then((res) => {
+      this.userInfo = res.data
 
-  
+      this.loading = false
+      this.$message.success(`${this.userInfo.name}，登陆成功`)
+    }).catch((error) => {
+      console.log(error)
+      this.loading = false
+    })
+  }
+
 }
 </script>
 

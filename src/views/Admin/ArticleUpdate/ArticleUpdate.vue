@@ -29,7 +29,7 @@
     <!-- 文章内容 -->
     <h2 style="margin-top: 3vh">文章内容</h2>
      <!-- 文章内容 -->
-      <mavon-editor   codeStyle="tomorrow-night" @change="markChange"  v-model="handbook"/>
+      <mavon-editor ref=md @imgAdd="$imgAdd"  codeStyle="tomorrow-night" @change="markChange"  v-model="handbook"/>
   <!-- 修改文章 -->
     <div style="text-align: left;margin-top: 3vh">
       <a-button type="primary" @click="updateArticle">修改文章</a-button>&nbsp;
@@ -39,11 +39,10 @@
 </template>
 
 <script>
-import config from '@/config/defaultSettings'
 
 export default {
   name: 'ArticleUpdate',
-  inject:['reload'],
+  inject: ['reload'],
   data () {
     return {
       // v-bind style
@@ -62,46 +61,62 @@ export default {
         desc: '',
         imgurl: ''
       },
-      handbook: ""
-    };
-
+      handbook: ''
+    }
   },
   methods: {
     /**
      * 选择当前文章并赋值到文本框里
      */
-     contentType(value,option){
-        let id = option.data.key
-        this.article.id = value
-        this.article.title = this.articleName[id].title
-        this.article.desc = this.articleName[id].desc
-        this.handbook = this.articleName[id].markdown
-        this.article.imgurl = this.articleName[id].imgurl
-      },
-      /**
+    contentType (value, option) {
+      let id = option.data.key
+      this.article.id = value
+      this.article.title = this.articleName[id].title
+      this.article.desc = this.articleName[id].desc
+      this.handbook = this.articleName[id].markdown
+      this.article.imgurl = this.articleName[id].imgurl
+    },
+    /**
        * 编辑区发生变化的回调事件
-       * @param 
+       * @param
        */
-      markChange(value,render){
-          this.article.body = render
+    markChange (value, render) {
+      this.article.body = render
+    },
+/**
+         * 图片上传到云服务器
+         */
+      $imgAdd(pos,$file){
+           var formdata = new FormData();
+           formdata.append('file', $file);
+           this.$axios({
+               url: 'http://irlin.cn:3001/api/upload',
+               method: 'post',
+               headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+               data: formdata,
+           }).then((res) => {
+               // 第二步.将返回的url替换到文本原位置![...](0) -> ![...](url)
+               // $vm.$img2Url 详情见本页末尾
+               let url = `http://cdn.irlin.cn/${res.data.data.key}`
+               this.$refs.md.$img2Url(pos, url) ;
+           }).catch(error => {console.log(error);})
       },
-    
-    updateArticle(){
+    updateArticle () {
       this.$setLoading(true)
       this.$axios({
-        method:'put',
+        method: 'put',
         url: 'https://irlin.cn/api/updateArticle',
-        data:{
+        data: {
           id: this.article.id,
           content: this.article.body,
-        markdown: this.handbook,
-        title: this.article.title,
-        imgurl: this.article.imgurl,
-        desc: this.article.desc,
-        lastUpdateAt: ''
+          markdown: this.handbook,
+          title: this.article.title,
+          imgurl: this.article.imgurl,
+          desc: this.article.desc,
+          lastUpdateAt: ''
         }
       }).then(res => {
-        this.$message.success('更新成功',3)
+        this.$message.success('更新成功', 3)
         this.reload()
         this.$setLoading(false)
       }).catch(() => this.$setLoading(false))
@@ -111,18 +126,16 @@ export default {
      * 删除文章
      */
 
-    deleteArticle(){
+    deleteArticle () {
       this.$setLoading(true)
       this.$axios.delete(`https://irlin.cn/api/deleteArticle/${this.article.id}`).then(res => {
-        if(res.data.result == 'success'){
-          this.$message.success('删除成功',3);
+        if (res.data.result == 'success') {
+          this.$message.success('删除成功', 3)
           this.reload()
           this.$setLoading(false)
         }
       }).catch(() => this.$setLoading(false))
     }
-    
-
 
   },
   created () {

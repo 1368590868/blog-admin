@@ -6,7 +6,7 @@ Vue.use(Router)
 export default new Router({
   mode: 'history',
   routes: [
-    { 
+    {
       path: '/',
       name: 'admin',
       component: () => import('@/views/Admin'),

@@ -32,31 +32,30 @@ export default {
       previewVisible: false,
       previewImage: '',
       img: '',
-      fileList: [],
-    };
+      fileList: []
+    }
   },
   created () {
     this.getPhoto()
   },
   methods: {
     handleCancel () {
-      this.previewVisible = false;
+      this.previewVisible = false
     },
     handlePreview (file) {
-      this.previewImage = file.url || file.thumbUrl;
-      this.previewVisible = true;
+      this.previewImage = file.url || file.thumbUrl
+      this.previewVisible = true
     },
     handleChange (info) {
-      this.fileList = info.fileList;
+      this.fileList = info.fileList
       if (info.file.status === 'done') {
         this.$axios.post('https://irlin.cn/api/addImg', {
-          //info.fileList.length   每次上传图片，会存为一个数组，图片的值应该取对应数组的下标
+          // info.fileList.length   每次上传图片，会存为一个数组，图片的值应该取对应数组的下标
           url: `http://cdn.irlin.cn/${info.fileList[info.fileList.length - 1].response.data.key}`
         }).then(res => {
           this.img = [...this.img, { url: `http://cdn.irlin.cn/${info.fileList[info.fileList.length - 1].response.data.key}` }]
         })
       }
-
     },
     getPhoto () {
       this.$axios.get('https://irlin.cn/api/img').then(res => {
@@ -68,8 +67,8 @@ export default {
       this.previewImage = url
       this.previewVisible = true
     }
-  },
-};
+  }
+}
 </script>
 <style scoped>
 /* you can make up upload button and sample style by using stylesheets */

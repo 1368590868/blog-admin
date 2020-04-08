@@ -1,7 +1,7 @@
 <template>
 <a-spin :tip='tip' :spinning="loading">
   <div class="admin-login">
-    
+
     <div>
       <div>
         <h2>
@@ -21,14 +21,14 @@
 </template>
 
 <script>
-import axios from 'axios';
+import axios from 'axios'
 import Cookie from 'js-cookie'
 
 export default {
   layout (context) {
     return 'admin'
   },
-  data(){
+  data () {
     return {
       loading: false,
       tip: '登陆中'
@@ -37,8 +37,8 @@ export default {
   methods: {
     login () {
       this.loading = true
-      const client_id = '912f17eced062dcd5d85';
-      const authorize_uri = 'https://github.com/login/oauth/authorize';
+      const client_id = '912f17eced062dcd5d85'
+      const authorize_uri = 'https://github.com/login/oauth/authorize'
 
       location.href = `${authorize_uri}?client_id=${client_id}`
     },
@@ -67,19 +67,18 @@ export default {
         this.$router.push('/home')
         this.loading = false
       }).catch((error) => {
-        console.log(error);
+        console.log(error)
         this.loading = false
       })
     }
 
   },
   mounted () {
-   
-      const code = this.$route.query.code
-      if (code == null || code === '') {
-      }else{
-      this.getToken(code) 
-      }
+    const code = this.$route.query.code
+    if (code == null || code === '') {
+    } else {
+      this.getToken(code)
+    }
   }
 }
 </script>

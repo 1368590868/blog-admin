@@ -22,17 +22,17 @@ export default {
   // 菜单导航
   adminMenu: [
     {
-      title: 'dashboard',
+      title: '综合管理',
       key: 'dashboard',
       icon: 'pie-chart',
       children: [
         {
-          title: '留言版',
+          title: '评论管理',
           key: 'workbench',
           icon: 'reconciliation'
         },
         {
-          title: '个人信息',
+          title: '相册管理',
           key: 'personal',
           icon: 'user'
         }
@@ -67,39 +67,39 @@ export default {
       label: '技术文章'
     }
   ],
-  //留言表表头字段配置
+  // 留言表表头字段配置
   tableColumns: [
-{    title: '姓名',
-     dataIndex: 'username',
+    { title: '姓名',
+      dataIndex: 'username',
       width: '12%',
-     key:'username'
+      key: 'username'
     },
     {
-       title: '邮箱',
-         dataIndex: 'email',
+      title: '邮箱',
+      dataIndex: 'email',
       align: 'center',
-         key:'email'
+      key: 'email'
     },
-    
+
     {
-       title: '留言内容',
-         dataIndex: 'comment',
-         align:'center',
+      title: '留言内容',
+      dataIndex: 'comment',
+      align: 'center',
       width: '40%',
-         key:'comment'
+      key: 'comment'
     },
     {
-       title: '时间',
-         dataIndex: 'createAt',
+      title: '时间',
+      dataIndex: 'createAt',
       align: 'center',
-         key:'createAt'
+      key: 'createAt'
     },
     {
       title: '操作',
-      align:'center',
+      align: 'center',
       key: 'action',
       scopedSlots: {
-        customRender: 'action',
+        customRender: 'action'
       }
     }
   ]

@@ -44,35 +44,35 @@
 </template>
 
 <script>
-import config from '../../../config/defaultSettings';
+import config from '../../../config/defaultSettings'
 export default {
   name: 'Workbench',
-  inject:['reload'],
+  inject: ['reload'],
   data () {
     return {
       articleName: '',
       // 表格标题
-      columns : config.tableColumns,
+      columns: config.tableColumns,
       // 表数据
-      data:[],
+      data: [],
       // 弹出框数据
-      title:'',
+      title: '',
       visible: false,
       confirmLoading: false,
       // 多行文本回复内容
-      reply : '',
+      reply: '',
       // 选择一行的内容
-      row:''
+      row: ''
     }
   },
-  computed:{
+  computed: {
     // 选项
-    rowSelection() {
+    rowSelection () {
       return {
-      onSelect:(selectedRows)=>{
-        this.title = `正在回复：${selectedRows.username}`
-        this.row = selectedRows
-      }
+        onSelect: (selectedRows) => {
+          this.title = `正在回复：${selectedRows.username}`
+          this.row = selectedRows
+        }
 
       }
     }
@@ -86,28 +86,26 @@ export default {
     }).catch(() => {
       alert('服务器正在修复')
     })
-    
-    
   },
   methods: {
     // 确认删除
-    confirm(){
-      if(this.row.key == '' || this.row.key == undefined){
+    confirm () {
+      if (this.row.key == '' || this.row.key == undefined) {
         this.$message.error('请选择需要删除的评论')
         return
       }
-this.$axios({
-          method: 'delete',
-          url: `https://irlin.cn/api/deleteReply/${this.row.key}`,
-        }).then(res => {
-          this.$message.success('删除成功')
-          setTimeout(() => {
-            this.reload()
-          }, 1000);
-        })
+      this.$axios({
+        method: 'delete',
+        url: `https://irlin.cn/api/deleteReply/${this.row.key}`
+      }).then(res => {
+        this.$message.success('删除成功')
+        setTimeout(() => {
+          this.reload()
+        }, 1000)
+      })
     },
     // 删除评论取消
-    cancel(){
+    cancel () {
       this.$message.success('你取消了删除')
     },
     /**
@@ -117,50 +115,50 @@ this.$axios({
     getReply (id, key) {
       this.$axios.get(`https://irlin.cn/api/comment/${id}`).then(res => {
         this.data = res.data.data
-        for(let i=0; i<this.data.length; i++){
+        for (let i = 0; i < this.data.length; i++) {
           // 把评论的id 给 key
           this.data[i].key = this.data[i]._id
-          this.data[i].reply = this.data[i].reply.map((m,i) => {
-            const newKey = {key:i,...m}
+          this.data[i].reply = this.data[i].reply.map((m, i) => {
+            const newKey = { key: i, ...m }
             return newKey
           })
         }
       })
     },
     // 弹出框显示
-     showModal() {
-       if(this.title === '' || this.title == undefined){
-         this.$message.error('请先选择')
-         return
-       }
-        this.visible = true;
-      },
-      // 弹出框ok
-      handleOk(){
-        this.confirmLoading = true
-        this.$axios({
-          method:'put',
-          url: 'https://irlin.cn/api/addReply',
-          data: {
-            comment:this.reply,
-            id:this.row.key,
-            email: this.row.email,
-            username: this.row.username
-          }
-        }).then(res =>{
-          this.confirmLoading = false
-          this.$message.success('回复成功,请重新选择文章')
-          this.visible = false
-          setTimeout(()=>{
-          this.reload()
-          },1000)
-        }).catch(() =>{this.confirmLoading = false})
-      },
-      // 弹出框cancle
-      handleCancel(){
+    showModal () {
+      if (this.title === '' || this.title == undefined) {
+        this.$message.error('请先选择')
+        return
+      }
+      this.visible = true
+    },
+    // 弹出框ok
+    handleOk () {
+      this.confirmLoading = true
+      this.$axios({
+        method: 'put',
+        url: 'https://irlin.cn/api/addReply',
+        data: {
+          comment: this.reply,
+          id: this.row.key,
+          email: this.row.email,
+          username: this.row.username
+        }
+      }).then(res => {
+        this.confirmLoading = false
+        this.$message.success('回复成功,请重新选择文章')
         this.visible = false
-      },
-     
+        setTimeout(() => {
+          this.reload()
+        }, 1000)
+      }).catch(() => { this.confirmLoading = false })
+    },
+    // 弹出框cancle
+    handleCancel () {
+      this.visible = false
+    }
+
   }
 }
 </script>
