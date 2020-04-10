@@ -51,9 +51,9 @@ export default {
       if (info.file.status === 'done') {
         this.$axios.post('https://irlin.cn/api/addImg', {
           // info.fileList.length   每次上传图片，会存为一个数组，图片的值应该取对应数组的下标
-          url: `http://cdn.irlin.cn/${info.fileList[info.fileList.length - 1].response.data.key}`
+          url: `http://cdn.irlin.cn/${info.fileList[info.fileList.length - 1].response.data.key}-ImgAutoSmall`
         }).then(res => {
-          this.img = [...this.img, { url: `http://cdn.irlin.cn/${info.fileList[info.fileList.length - 1].response.data.key}` }]
+          this.img = [...this.img, { url: `http://cdn.irlin.cn/${info.fileList[info.fileList.length - 1].response.data.key}-ImgAutoSmall` }]
         })
       }
     },

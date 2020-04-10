@@ -17,7 +17,7 @@
     <h2>文章标题</h2>
     <a-input placeholder="文章标题" v-model="article.title" :style="inputWidth" />
     <h2>文章简述</h2>
-    <a-input placeholder="文章描述" v-model="article.desc" :style="inputWidth" />
+    <a-textarea :autosize="true" placeholder="文章描述" v-model="article.desc" :style="inputWidth" />
     <h2>首页图片地址(可在写作中图片上传后，复制地址)</h2>
     <a-input
       placeholder="defaultImageUrl:     http://cdn.irlin.cn/wangwang.jpeg"
@@ -97,7 +97,7 @@ export default {
            }).then((res) => {
                // 第二步.将返回的url替换到文本原位置![...](0) -> ![...](url)
                // $vm.$img2Url 详情见本页末尾
-               let url = `http://cdn.irlin.cn/${res.data.data.key}`
+               let url = `http://cdn.irlin.cn/${res.data.data.key}-ImgAutoSmall`
                this.$refs.md.$img2Url(pos, url) ;
            }).catch(error => {console.log(error);})
       },
